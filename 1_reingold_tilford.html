@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body> 
+ <style>
+.link {
+fill: none;
+stroke: #ccc;
+opacity: 0.45;
+stroke-width: 1.5px;
+}
+.node circle {
+stroke: #fff;
+opacity: 0.9;
+stroke-width: 1.5px;
+}
+.node:not(:hover) .nodetext {
+display: none;
+}
+text {
+font: 8px serif;
+opacity: 0.9;
+pointer-events: none;
+}
+</style>
+
+<script src=http://d3js.org/d3.v3.min.js></script>
+
+<script> 
+ var width = 900
+height = 600;
+
+var diameter = 500;
+
+var tree = d3.layout.tree()
+.size([360, diameter / 2 - 120])
+.separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+
+var diagonal = d3.svg.diagonal.radial()
+.projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
+
+var svg = d3.select("body").append("svg")
+.attr("width", width)
+.attr("height", height)
+.append("g")
+.attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")"); 
+ var root = {"name":"waste","children":[{"name":"wastes resulting from exploration mining quarrying and physical and chemical treatment of minerals","children":[{"name":"wastes from mineral excavation","children":[{"name":["wastes from mineral metalliferous excavation"]},{"name":["wastes from mineral non metalliferous excavation"]}]},{"name":"wastes from physical and chemical processing of metalliferous minerals","children":[{"name":["acid generating tailings from processing of sulphide ore"]},{"name":["other tailings containing dangerous substances"]},{"name":["tailings other than those mentioned in 01 03 04 and 01 03 05"]},{"name":["other wastes containing dangerous substances from physical and chemical processing of metalliferous minerals"]},{"name":["dusty and powdery wastes other than those mentioned in 01 03 07"]},{"name":["red mud from alumina production other than the wastes mentioned in 01 03 07"]},{"name":["wastes not otherwise specified"]}]},{"name":"wastes from physical and chemical processing of non metalliferous minerals","children":[{"name":["wastescontainingdangeroussubstancesfromphysical andchemicalprocessing ofnon metalliferousminerals"]},{"name":["waste gravel and crushed rocks other than those mentioned in 01 04 07"]},{"name":["waste sand and clays"]},{"name":["dusty and powdery wastes other than those mentioned in 01 04 07"]},{"name":["wastes from potash and rock salt processing other than those mentioned in 01 04 07"]},{"name":["tailings and other wastes from washing and cleaning of minerals other than those mentioned in 01 04 07 and 01 04 11"]},{"name":["wastes from stone cutting and sawing other than those mentioned in 01 04 07"]},{"name":["wastes not otherwise specified"]}]},{"name":"drilling muds and other drilling wastes","children":[{"name":["fresh water drilling muds and wastes"]},{"name":["oil containing drilling muds and wastes"]},{"name":["drilling muds and other drilling wastes containing dangerous substances"]},{"name":["barite containing drilling muds and wastes other than those mentioned in 01 05 05 and 01 05 06"]},{"name":["chloride containing drilling muds and wastes other than those mentioned in 01 05 05 and 01 05 06"]},{"name":["wastes not otherwise specified"]}]}]}]} ; 
+ var nodes = tree.nodes(root),
+links = tree.links(nodes);
+
+var link = svg.selectAll(".link")
+.data(links)
+.enter().append("path")
+.attr("class", "link")
+.attr("d", diagonal);
+
+var node = svg.selectAll(".node")
+.data(nodes)
+.enter().append("g")
+.attr("class", "node")
+.attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+.on("mouseover", mouseover)
+.on("mouseout", mouseout);
+
+node.append("circle")
+.attr("r", 4.5)
+.style("fill", "#3182bd");
+
+node.append("text")
+.attr("dy", ".31em")
+.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+.attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+.style("fill", "#3182bd")
+.text(function(d) { return d.name; });
+
+function mouseover() {
+d3.select(this).select("circle").transition()
+.duration(750)
+.attr("r", 9)
+d3.select(this).select("text").transition()
+.duration(750)
+.attr("dy", ".31em")
+.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+.attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+.style("stroke-width", ".5px")
+.style("font", "15.2px serif")
+.style("opacity", 1);
+}
+
+function mouseout() {
+d3.select(this).select("circle").transition()
+.duration(750)
+.attr("r", 4.5)
+d3.select(this).select("text").transition()
+.duration(750)
+.attr("dy", ".31em")
+.attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+.attr("transform", function(d) { return d.x < 180 ? "translate(8)" : "rotate(180)translate(-8)"; })
+.style("font", "8px serif")
+.style("opacity", 0.9);
+}
+
+d3.select(self.frameElement).style("height", diameter - 150 + "px");
+
+</script>
+ </body>
